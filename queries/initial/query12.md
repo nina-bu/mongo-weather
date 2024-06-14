@@ -82,10 +82,11 @@ db.weather.aggregate([
             totalPrecipitation: 1
         }
     }
-]);
+])
 ```
 
 ## Statistics
+![image](https://github.com/nina-bu/mongo-weather/assets/116764953/0fc84614-7799-411c-99e7-1512d738a074)
 
 ## Bottlenecks & Optimization
 - $lookup - index on weather.city_name and countries.capital
