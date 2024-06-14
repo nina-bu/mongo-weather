@@ -1,4 +1,4 @@
-# Query #4
+# Query #5
 ## What are the temperature change trends (warming, cooling, stable) categorized by population size and density for each city?
 
 ```javascript
