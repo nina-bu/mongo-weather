@@ -76,3 +76,7 @@ db.weather.aggregate([
 ```
 ## Statistics
 ![image](https://github.com/nina-bu/mongo-weather/assets/116764953/5d394ceb-6751-4f4c-b0b4-325643c6228f)
+
+## Bottlenecks & Optimization
+- $unwind - precompute total precipitation for each document in weather collection
+- $lookup - add an extended reference to the country for every weather document
