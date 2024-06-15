@@ -1,6 +1,5 @@
 # Query 3
 ## Determine the top 5 best cities for summer vacations - sunniest with the least rainfall in August.
-[## Odrediti top 5 najboljih gradova za letovanje - najsunčaniji sa najmanje padavina u avgustu]
 
 ```javascript
 db.weather.aggregate([
@@ -15,7 +14,8 @@ db.weather.aggregate([
             "_id": {
                 "station_id": "$station_id",
                 "city_name": "$city_name",
-                "year": { "$year": { "$dateFromString": { "dateString": { "$dateToString": { "format": "%Y-%m-%d", "date": "$readings.date" } } } } }
+                "date": { "$dateToString": { "format": "%Y-%m-%d", "date": "$readings.date" } },
+                "year": "$year"
             },
             "avg_temp_c": { "$avg": "$readings.avg_temp_c" },
             "max_temp_c": { "$max": "$readings.max_temp_c" },
@@ -105,7 +105,8 @@ db.weather.aggregate([
 ```
 
 ## Statistics
-![image]()
+![query23](https://github.com/nina-bu/mongo-weather/assets/116906239/b6105427-b80c-4791-b217-f8aa8b31ab05)
+
 
 ## Bottlenecks & Optimization
 - 
