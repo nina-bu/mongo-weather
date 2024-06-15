@@ -81,7 +81,7 @@ countries_collection.create_index([("country", 1)])
 
 # weather collection index
 weather_collection.create_index([("station_id", 1), ("year", 1)])
-weather_collection.create_index([("country", 1)])
+weather_collection.create_index([("city_name", 1)])
 
 print("Indexes created.")
 

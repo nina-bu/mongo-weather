@@ -3,7 +3,7 @@
 ## For each capital in Europe, find the worst time of year to travel, defined as the season with the strongest wind and the highest precipitation
 
 ```javascript
-db.weatherV2.aggregate([
+db.weather.aggregate([
     {
         $lookup: {
             from: "countries",

@@ -1,7 +1,7 @@
 # Query #1
 ## For each season and country, find the rainiest city over the previous 5 years
 ```javascript 
-db.weatherV2.aggregate([
+db.weather.aggregate([
     {
         $match: {
             year: { $gte: new Date().getFullYear() - 5 },
