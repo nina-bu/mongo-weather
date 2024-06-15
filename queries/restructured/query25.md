@@ -2,21 +2,12 @@
 ## Find the year in which the most cities in Europe had an average annual temperature above 20°C, and analyze which countries contributed the most to this number.
 
 ```javascript
-db.weatherV1.aggregate([
+db.weatherV2.aggregate([
     {
         "$lookup": {
-            "from": "cities",
-            "localField": "station_id",
-            "foreignField": "station_id",
-            "as": "city_info"
-        }
-    },
-    { "$unwind": "$city_info" },
-    { // Lookup to join with countries collection based on city_info.iso3
-        "$lookup": {
             "from": "countries",
-            "localField": "city_info.iso3",
-            "foreignField": "iso3",
+            "localField": "country_name",
+            "foreignField": "country",
             "as": "country_info"
         }
     },
@@ -103,8 +94,3 @@ db.weatherV1.aggregate([
 ```
 
 ## Statistics
-![query25](https://github.com/nina-bu/mongo-weather/assets/116906239/581182d7-ff44-4985-b4b0-f65b26ebb03c)
-
-
-## Bottlenecks & Optimization
-- $lookup - add an extended reference to the country for every weather document

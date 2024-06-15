@@ -2,26 +2,17 @@
 ## How has the average monthly temperature changed for each region over the past five years?
 
 ```javascript
-db.weatherV1.aggregate([
-        {
+db.weatherV2.aggregate([
+    {
         "$match": {
             "year": { "$gte": new Date().getFullYear() - 5 }
         }
     },
     {
         "$lookup": {
-            "from": "cities",
-            "localField": "station_id",
-            "foreignField": "station_id",
-            "as": "city_info"
-        }
-    },
-    { "$unwind": "$city_info" },
-    {
-        "$lookup": {
             "from": "countries",
-            "localField": "city_info.iso3",
-            "foreignField": "iso3",
+            "localField": "country_name",
+            "foreignField": "country",
             "as": "country_info"
         }
     },
@@ -30,7 +21,7 @@ db.weatherV1.aggregate([
         "$group": {
             "_id": {
                 "region": "$country_info.region",
-                "country": "$country_info.country",
+                "country": "$country_name",
                 "station_id": "$station_id",
                 "city_name": "$city_name",
                 "year": "$year",
@@ -41,8 +32,8 @@ db.weatherV1.aggregate([
     },
     {
         "$sort": {
-            "year": 1, 
-            "month": 1 
+            "year": 1,
+            "month": 1
         }
     },
     {
@@ -62,7 +53,7 @@ db.weatherV1.aggregate([
             }
         }
     },
-     {
+    {
         "$project": {
             "_id": 1,
             "average_temperatures": {
@@ -79,7 +70,7 @@ db.weatherV1.aggregate([
                 "region": "$_id.region",
                 "country": "$_id.country",
             },
-            "cities": {            
+            "cities": {
                 "$push": {
                     "station_id": "$_id.station_id",
                     "city_name": "$_id.city_name",
@@ -112,8 +103,3 @@ db.weatherV1.aggregate([
 ```
 
 ## Statistics
-![query21](https://github.com/nina-bu/mongo-weather/assets/116906239/63e14902-2c53-480b-853f-37b153b4275b)
-
-
-## Bottlenecks & Optimization
-- $lookup - add an extended reference to the country for every weather document

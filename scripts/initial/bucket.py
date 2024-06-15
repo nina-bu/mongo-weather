@@ -60,6 +60,6 @@ updated_collection = db['weatherV1']
 result = og_collection.aggregate(pipeline)
 updated_collection.insert_many(result)
 
-og_collection.drop()
+# og_collection.drop()
 
 print("Weather collection scheme updated.")

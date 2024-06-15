@@ -2,7 +2,7 @@
 ## Determine the top 5 best cities for summer vacations - sunniest with the least rainfall in August.
 
 ```javascript
-db.weatherV1.aggregate([
+db.weatherV2.aggregate([
     {
         "$match": {
             "month": { "$eq": 8 }
@@ -47,10 +47,7 @@ db.weatherV1.aggregate([
     },
     {
         "$group": {
-            "_id": {
-                "station_id": "$_id.station_id",
-                "city_name": "$_id.city_name"
-            },
+            "_id": "$_id.city_name",
             "yearly_data": {
                 "$push": {
                     "year": "$_id.year",
@@ -88,9 +85,9 @@ db.weatherV1.aggregate([
     {
         "$project": {
             "_id": 0,
-            "city_name": "$_id.city_name",
+            "city_name": "$_id",
             "years_ranks": "$yearly_data.year",
-            "country": "$city.country",
+            "country": "$country_name",
             "longitude": "$city.longitude",
             "latitude": "$city.latitude",
             "yearly_data": 1,
@@ -105,8 +102,3 @@ db.weatherV1.aggregate([
 ```
 
 ## Statistics
-![query23](https://github.com/nina-bu/mongo-weather/assets/116906239/b6105427-b80c-4791-b217-f8aa8b31ab05)
-
-
-## Bottlenecks & Optimization
-- $lookup - add an extended reference to the city's longitude and latitude for every weather document

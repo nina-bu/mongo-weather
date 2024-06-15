@@ -2,41 +2,34 @@
 ## Determine the top 5 European cities for winter sports, based on greatest snow depth, lowest average temperatures, and weakest wind conditions during January
 
 ```javascript
-db.weatherV1.aggregate([
+db.weatherV2.aggregate([
     {
         "$lookup": {
-            "from": "cities",
-            "localField": "station_id",
-            "foreignField": "station_id",
-            "as": "city_info"
-        }
-    },
-    { "$unwind": "$city_info" },
-    { // Lookup to join with countries collection based on city_info.iso3
-        "$lookup": {
             "from": "countries",
-            "localField": "city_info.iso3",
-            "foreignField": "iso3",
+            "localField": "country_name",
+            "foreignField": "country",
             "as": "country_info"
         }
     },
-    {    // Match stage to filter for European cities and January data
+    {
         "$match": {
             "$expr": {
                 "$and": [
-                    { "$eq": [{ "$month": { "$arrayElemAt": ["$readings.date", 0] } }, 1] },  
+                    { "$eq": [{ "$month": { "$arrayElemAt": ["$readings.date", 0] } }, 1] },
                     { "$eq": [{ "$arrayElemAt": ["$country_info.continent", 0] }, "Europe"] }
                 ]
             }
         }
     },
-    { "$unwind": "$readings" },
+    {
+        "$unwind": "$readings"
+    },
     {
         "$group": {
             "_id": {
                 "station_id": "$station_id",
                 "city_name": "$city_name",
-                "year": "$year"
+                "year": "$readings.date.year"
             },
             "avg_temp_c": { "$avg": "$readings.avg_temp_c" },
             "max_temp_c": { "$max": "$readings.max_temp_c" },
@@ -49,7 +42,7 @@ db.weatherV1.aggregate([
         "$sort": {
             "avg_snow_depth_mm": -1,
             "avg_temp_c": 1,
-            "avg_wind_speed_kmh": 1 
+            "avg_wind_speed_kmh": 1
         }
     },
     {
@@ -77,12 +70,14 @@ db.weatherV1.aggregate([
     },
     {
         "$sort": {
-            "avg_sunshine_min": -1,
-            "total_precipitation_mm": 1,
-            "avg_temp_c": 1
+            "avg_snow_depth_mm": -1,
+            "avg_temp_c": 1,
+            "avg_wind_speed_kmh": 1
         }
     },
-    { "$limit": 5 },
+    {
+        "$limit": 5
+    },
     {
         "$lookup": {
             "from": "cities",
@@ -91,15 +86,17 @@ db.weatherV1.aggregate([
             "as": "city"
         }
     },
-    { "$unwind": "$city" },
+    {
+        "$unwind": "$city"
+    },
     {
         "$project": {
             "_id": 0,
             "city_name": "$_id.city_name",
             "years_ranks": "$yearly_data.year",
-            "country": "$city.country",
-            "longitude": "$city.longitude",
-            "latitude": "$city.latitude",
+            "country": "$city_info.country",
+            "longitude": "$city_info.longitude",
+            "latitude": "$city_info.latitude",
             "yearly_data": 1,
             "avg_temp_c": 1,
             "max_temp_c": 1,
@@ -112,8 +109,3 @@ db.weatherV1.aggregate([
 ```
 
 ## Statistics
-![query24](https://github.com/nina-bu/mongo-weather/assets/116906239/7b691198-ebb4-4884-a050-6d347625e76a)
-
-
-## Bottlenecks & Optimization
-- $lookup - add an extended reference to the country for every weather document
