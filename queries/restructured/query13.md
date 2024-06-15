@@ -9,7 +9,7 @@ db.weather.aggregate([
       _id: {
         station_id: "$station_id",
         year: "$year",
-        country: "$country",
+        country: "$$country_name",
         city_name: "$city_name"
       },
       annual_avg_temp: { $avg: "$avg_temp_c" }

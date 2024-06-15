@@ -9,6 +9,7 @@ services:
     networks:
       - stack
 
+  # mongodb://mongodb:27017/weatherDB - Metabase connection string
   metabase:
     image: metabase/metabase:v0.49.0
     ports:
