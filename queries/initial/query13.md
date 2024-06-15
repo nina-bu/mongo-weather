@@ -4,88 +4,85 @@
 
 ```javascript
 db.weather.aggregate([
-    {
-        $lookup: {
-            from: "countries",
-            localField: "city_name",
-            foreignField: "capital",
-            as: "country_info"
-        }
-    },
-    {
-        $match: {
-            $expr: {
-                $and: [
-                    { $eq: ["$city_name", { $arrayElemAt: ["$country_info.capital", 0] }] },
-                    { $eq: ["Europe", { $arrayElemAt: ["$country_info.continent", 0] }] }
-                ]
-            }
-        }
-    },
-    {
-        $project: {
-            _id: 0,
-            capital: "$city_name",
-            country: { $arrayElemAt: ["$country_info.country", 0] },
-            year: 1,
-            readings: {
-                $map: {
-                    input: "$readings",
-                    as: "reading",
-                    in: {
-                        season: "$$reading.season",
-                        avg_wind_speed_kmh: "$$reading.avg_wind_speed_kmh",
-                        precipitation_mm: "$$reading.precipitation_mm"
-                    }
-                }
-            }
-        }
-    },
-    {
-        $unwind: "$readings"
-    },
-    {
-        $group: {
-            _id: {
-                capital: "$capital",
-                country: "$country",
-                season: "$readings.season"
-            },
-            maxWindSpeed: { $max: "$readings.avg_wind_speed_kmh" },
-            totalPrecipitation: { $sum: { $ifNull: ["$readings.precipitation_mm", 0] } }
-        }
-    },
-    {
-        $sort: {
-            "_id.capital": 1,
-            totalPrecipitation: -1,
-            maxWindSpeed: -1
-
-        }
-    },
-    {
-        $group: {
-            _id: { capital: "$_id.capital", country: "$_id.country" },
-            worstSeason: { $first: "$_id.season" },
-            maxWindSpeed: { $first: "$maxWindSpeed" },
-            totalPrecipitation: { $first: "$totalPrecipitation" }
-        }
-    },
-    {
-        $project: {
-            _id: 0,
-            capital: "$_id.capital",
-            country: "$_id.country",
-            worstSeason: 1,
-            maxWindSpeed: 1,
-            totalPrecipitation: 1
-        }
+  {
+    $lookup: {
+      from: "cities",
+      localField: "station_id",
+      foreignField: "station_id",
+      as: "city_info"
     }
+  },
+  {
+    $project: {
+      station_id: 1,
+      year: 1,
+      month: 1,
+      avg_temp_c: 1,
+      country: { $arrayElemAt: ["$city_info.country", 0] },
+      city_name: { $arrayElemAt: ["$city_info.city_name", 0] }
+    }
+  },
+  {
+    $group: {
+      _id: {
+        station_id: "$station_id",
+        year: "$year",
+        country: "$country",
+        city_name: "$city_name"
+      },
+      annual_avg_temp: { $avg: "$avg_temp_c" }
+    }
+  },
+  {
+    $group: {
+      _id: {
+        country: "$_id.country",
+        year: "$_id.year"
+      },
+      hottest_city: {
+        $max: {
+          avg_temp: "$annual_avg_temp",
+          city_name: "$_id.city_name"
+        }
+      },
+      coldest_city: {
+        $min: {
+          avg_temp: "$annual_avg_temp",
+          city_name: "$_id.city_name"
+        }
+      }
+    }
+  },
+  {
+    $addFields: {
+      temp_diff: {
+        $subtract: ["$hottest_city.avg_temp", "$coldest_city.avg_temp"]
+      }
+    }
+  },
+  {
+    $sort: { temp_diff: -1 } 
+  },
+  {
+    $limit: 10 
+  },
+  {
+    $project: {
+      _id: 0,
+      country: "$_id.country",
+      year: "$_id.year",
+      hottest_city: "$hottest_city.city_name",
+      hottest_temp: "$hottest_city.avg_temp",
+      coldest_city: "$coldest_city.city_name",
+      coldest_temp: "$coldest_city.avg_temp",
+      temp_diff: 1
+    }
+  }
 ])
 ```
-
 ## Statistics
-![image](https://github.com/nina-bu/mongo-weather/assets/116764953/8f7f504c-0b2a-4387-892f-bf28bb3520d3)
+![image](https://github.com/nina-bu/mongo-weather/assets/116764953/f552858b-abf7-4c2d-b4fd-5da3e1f36d66)
+
 
 ## Bottlenecks & Optimization
 - $lookup - add an extended reference to the country for every weather document
