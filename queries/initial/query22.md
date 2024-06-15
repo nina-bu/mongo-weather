@@ -1,6 +1,5 @@
 # Query 2
 ## Find the top 10 cities and their countries by the number of exteremely hot days from last year - when the maximum temperature exceeded 30 degrees Celsius and minimum temperature wasn't under 25.
-/*## Additionally, calculate monthly average precipitation and average wind speed for these cities in month_statistics for each month.*/
 
 ```javascript
 db.weather.aggregate([
@@ -10,7 +9,7 @@ db.weather.aggregate([
         }
     },
     { "$unwind": "$readings" },
-    {
+    {   // it's possible that there are multiple readings for the same day
         "$group": {f
             "_id": {
                 "station_id": "$station_id",
@@ -84,7 +83,8 @@ db.weather.aggregate([
 ```
 
 ## Statistics
-![image]()
+![query22](https://github.com/nina-bu/mongo-weather/assets/116906239/8df5ac4b-5cba-4336-b51f-7764bb60ddde)
+
 
 ## Bottlenecks & Optimization
 - $lookup - add an extended reference to the country for every weather document, add an extended reference to the city's longitude and latitude for every weather document
