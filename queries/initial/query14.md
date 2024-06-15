@@ -80,7 +80,7 @@ db.weather.aggregate([
 ])
 ```
 ## Statistics
-![image](https://github.com/nina-bu/mongo-weather/assets/116764953/2867f922-f570-4fcf-8148-c09de1b4bb35)
+![image](https://github.com/nina-bu/mongo-weather/assets/116764953/43a90a8e-7fe8-4679-97df-ac26c0d79109)
 
 ## Bottlenecks & Optimization
 - nlj - add an extended reference to the country for every weather document
