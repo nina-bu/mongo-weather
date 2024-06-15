@@ -112,7 +112,8 @@ db.weather.aggregate([
 ```
 
 ## Statistics
-![image]()
+![query24](https://github.com/nina-bu/mongo-weather/assets/116906239/7b691198-ebb4-4884-a050-6d347625e76a)
+
 
 ## Bottlenecks & Optimization
 - $lookup - add an extended reference to the country for every weather document, add an extended reference to the city's longitude and latitude for every weather document
