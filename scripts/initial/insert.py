@@ -36,6 +36,6 @@ weather_data_dict = weather_data.to_dict('records')
 for record in weather_data_dict:
     record['date'] = record['date'].to_pydatetime()
 
-weather_collection = db['weather']
+weather_collection = db['weatherV0']
 weather_collection.insert_many(weather_data_dict)
 print("Weather data inserted successfully")
