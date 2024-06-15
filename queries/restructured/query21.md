@@ -103,3 +103,5 @@ db.weatherV2.aggregate([
 ```
 
 ## Statistics
+![r_query21](https://github.com/nina-bu/mongo-weather/assets/116906239/185edd5d-d6e6-461b-80b9-425c09bacf75)
+
